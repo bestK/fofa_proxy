@@ -106,7 +106,7 @@ if __name__ == "__main__":
     valid_proxies = asyncio.run(parse_proxy(hrefs))
 
     # 读取 proxy.txt
-    with open("proxy.txt", "r+") as f:
+    with open("latest.txt", "r+") as f:
         valid_proxies_old = f.read().splitlines()
         valid_proxies.extend(
             asyncio.run(check_proxies(valid_proxies_old, "http://www.baidu.com"))
