@@ -1,4 +1,5 @@
 import asyncio
+import os
 import requests
 from bs4 import BeautifulSoup
 
@@ -104,6 +105,13 @@ if __name__ == "__main__":
     hrefs = fofa_query(plain_text)
 
     valid_proxies = asyncio.run(parse_proxy(hrefs))
+
+    file_path = "latest.txt"
+
+    if not os.path.exists(file_path):
+        with open(file_path, "w") as f:
+            f.write("")
+        print(f"文件 {file_path} 已创建")
 
     # 读取 proxy.txt
     with open("latest.txt", "r+") as f:
