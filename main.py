@@ -114,7 +114,7 @@ if __name__ == "__main__":
         print(f"文件 {file_path} 已创建")
 
     # 读取 proxy.txt
-    with open("latest.txt", "r+") as f:
+    with open(file_path, "r+") as f:
         valid_proxies_old = f.read().splitlines()
         valid_proxies.extend(
             asyncio.run(check_proxies(valid_proxies_old, "http://www.baidu.com"))
