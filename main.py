@@ -88,12 +88,12 @@ async def parse_proxy(hrefs):
     for href in hrefs:
         try:
             response = requests.get(f"{href}/all", timeout=5)
-            response.raise_for_status()  # 检查响应是否成功
-            proxys = response.json()
-            proxy_list = [p["proxy"] for p in proxys]
-            valid_proxies = await check_proxies(proxy_list, "http://www.baidu.com")
-            all_proxies.extend(valid_proxies)
-        except requests.RequestException as e:
+            if response.ok:
+                proxys = response.json()
+                proxy_list = [p["proxy"] for p in proxys]
+                valid_proxies = await check_proxies(proxy_list, "http://www.baidu.com")
+                all_proxies.extend(valid_proxies)
+        except Exception as e:
             print(f"请求错误: {e}")
 
     return all_proxies
@@ -102,7 +102,8 @@ async def parse_proxy(hrefs):
 if __name__ == "__main__":
     # 使用示例
     plain_text = 'body="get all proxy from proxy pool"'
-    hrefs = fofa_query(plain_text)
+    # hrefs = fofa_query(plain_text)
+    hrefs = ["http://47.118.50.237:5010"]
 
     valid_proxies = asyncio.run(parse_proxy(hrefs))
 
