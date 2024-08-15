@@ -51,14 +51,11 @@ async def check_proxy(session, proxy, test_url):
     检查单个代理是否可用
     """
     try:
-        proxies = {
-            "http": proxy,
-            "https": proxy,
-        }
-
-        async with session.get(test_url, proxy=proxies, timeout=5) as response:
+        async with session.get(test_url, proxy=proxy, timeout=5) as response:
+            print(f"检查 {proxy} 状态码: {response.status}")
             return response.status == 200
-    except requests.RequestException:
+    except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+        print(f"请求错误: {e}")
         return False
 
 
@@ -91,7 +88,7 @@ async def parse_proxy(hrefs):
             if response.ok:
                 proxys = response.json()
                 proxy_list = [p["proxy"] for p in proxys]
-                valid_proxies = await check_proxies(proxy_list, "http://www.baidu.com")
+                valid_proxies = await check_proxies(proxy_list, "https://jsonip.com")
                 all_proxies.extend(valid_proxies)
         except Exception as e:
             print(f"请求错误: {e}")
@@ -102,8 +99,7 @@ async def parse_proxy(hrefs):
 if __name__ == "__main__":
     # 使用示例
     plain_text = 'body="get all proxy from proxy pool"'
-    # hrefs = fofa_query(plain_text)
-    hrefs = ["http://47.118.50.237:5010"]
+    hrefs = fofa_query(plain_text)
 
     valid_proxies = asyncio.run(parse_proxy(hrefs))
 
@@ -114,11 +110,11 @@ if __name__ == "__main__":
             f.write("")
         print(f"文件 {file_path} 已创建")
 
-    # 读取 proxy.txt
+    # 读取 latest.txt
     with open(file_path, "r+") as f:
         valid_proxies_old = f.read().splitlines()
         valid_proxies.extend(
-            asyncio.run(check_proxies(valid_proxies_old, "http://www.baidu.com"))
+            asyncio.run(check_proxies(valid_proxies_old, "https://jsonip.com"))
         )
         # 清空文件
         f.seek(0)
